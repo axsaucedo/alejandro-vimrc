@@ -3,6 +3,7 @@
 "   for more details read the end of this file.
 "
 " Sections:
+"    -> Vim-plug configuration
 "    -> General
 "    -> VIM user interface
 "    -> Colors and Fonts
@@ -14,11 +15,132 @@
 "    -> Editing mappings
 "    -> vimgrep searching and cope displaying
 "    -> Spell checking
-    "    -> Misc
-    "    -> Helper functions
-    "
+"    -> Misc
+"    -> Helper functions
+"    -> COLOR SYNTAX FOR FILES IN NERDTREE
+"
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
+
+    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+    " => Vim-plug setup
+    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+    " Setup vim-plug
+    call plug#begin('~/.vim/plugged')
+
+    " Enable plugins
+    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+    " Using Supertab for compatibility between YCM and UltiSnips
+    Plug 'ervandew/supertab'
+    " Nerd tree side directory
+    Plug 'scrooloose/nerdtree'
+    " NERDTree git plugin
+    Plug 'Xuyuanp/nerdtree-git-plugin'
+    " Icons for NERDTree
+    Plug 'ryanoasis/vim-webdevicons'
+    " fuzzy search
+    Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
+    Plug 'junegunn/fzf.vim'
+    " Colour parentheses
+    Plug 'luochen1990/rainbow'
+    " Multiple cursros
+    Plug 'terryma/vim-multiple-cursors'
+    " Python syntax
+    Plug 'hdima/python-syntax'
+    " Snippets
+    Plug 'SirVer/ultisnips'
+    Plug 'honza/vim-snippets'
+    " Markdown preview
+    Plug 'junegunn/vim-xmark', { 'do': 'make' }
+    " Adding support for YCM
+    Plug 'Valloric/YouCompleteMe'
+    " Smooth scroll
+    Plug 'terryma/vim-smooth-scroll'
+    " Complete closing parentheses
+    Plug 'jiangmiao/auto-pairs'
+    " Fugitive plugin
+    Plug 'tpope/vim-fugitive'
+    " NERD Commenter
+    Plug 'scrooloose/nerdcommenter'
+
+    " Finishing plugin list
+    call plug#end()
+
+    " NERDTree 
+    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+    autocmd StdinReadPre * let s:std_in=1
+    " Open NARDTree and move to editing area
+    autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | wincmd p | endif
+
+    " Close VIM if all windwos are closed even if the NERD TREE automatically
+    autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
+
+    " Allow for Ctrl+n to be shortcut to open nerdtree in the working directory
+    map <C-m> :NERDTreeToggle<CR>
+
+    " Set width
+    let g:NERDTreeWinSize=30
+
+    " FZF
+    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+    " This function ensures that we use the relevant search depending on whether we
+    "   are in a git repo or not
+    fun! FzfOmniFiles()
+        let is_git = system('git status')
+        if v:shell_error
+            :Files
+        else
+            :GFiles
+        endif
+    endfun
+    noremap <C-p><C-p> :call FzfOmniFiles()<CR> 
+    noremap <C-p><C-b> :Buffers<CR>
+    noremap <C-p><C-f> :Ag<CR>
+    noremap <C-p><C-g> :GFiles?<CR>
+    noremap <C-p><C-l> :BLines<CR>
+    noremap <C-p><C-c> :Commits<CR>
+
+	" rainbow parentheses
+    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+    let g:rainbow_active = 1
+    let g:rainbow_conf = {
+        \   'guifgs': ['darkorange3', 'seagreen3', 'firebrick', 'royalblue3' ],
+        \   'ctermfgs': ['lightyellow', 'lightmagenta', 'lightblue', 'lightcyan' ],
+        \}
+
+    " Enabling snippets
+    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+    let g:UltiSnipsExpandTrigger="<c-s>"
+    "let g:UltiSnipsJumpForwardTrigger="<c-b>"
+    "let g:UltiSnipsJumpBackwardTrigger="<c-z>"
+    
+    " Smooth scrolling
+    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+    let g:UltiSnipsExpandTrigger="<c-s>"
+    noremap <silent> <c-u> :call smooth_scroll#up(&scroll, 0, 2)<CR>
+    noremap <silent> <c-d> :call smooth_scroll#down(&scroll, 0, 2)<CR>
+    noremap <silent> <c-b> :call smooth_scroll#up(&scroll*2, 0, 4)<CR>
+    noremap <silent> <c-f> :call smooth_scroll#down(&scroll*2, 0, 4)<CR>
+
+    " Snippets
+    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+    let g:UltiSnipsExpandTrigger = "<Tab>"
+    let g:UltiSnipsJumpForwardTrigger = "<Tab>"
+    let g:UltiSnipsJumpBackwardTrigger = "<S-Tab>"
+    let g:UltiSnipsMappingsToIgnore = ['autocomplete']
+
+    " YouCompleteMe
+    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+    let g:ycm_key_list_select_completion = ['<C-j>', '<Down>']
+    let g:ycm_key_list_previous_completion = ['<C-k>', '<Up>']
+    let g:ycm_key_list_accept_completion = '<C-y>'
+
+    " Commenting
+    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+    noremap <C-x> <leader>cb
+    noremap <C-u> <leader>cu
 
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " => General
@@ -41,7 +163,6 @@
     " Fast saving
     nmap <leader>w :w!<cr>
 
-
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " => VIM user interface
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -50,6 +171,9 @@
 
     " Turn on the WiLd menu
     set wildmenu
+
+    " Turn on numberin
+    set number
 
     " Ignore compiled files
     set wildignore=*.o,*~,*.pyc
@@ -102,8 +226,8 @@
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Enable syntax highlighting
     syntax enable
-
-    colorscheme desert
+    colorscheme molokai
+    " colorscheme desert
     set background=dark
 
     " Set extra options when running in GUI mode
@@ -149,7 +273,8 @@
 
     set ai "Auto indent
     set si "Smart indent
-    set wrap "Wrap lines
+    "set wrap "Wrap lines
+    set nowrap "I don't want wrapping
 
 
     """"""""""""""""""""""""""""""
@@ -233,10 +358,8 @@
     map 0 ^
 
     " Move a line of text using ALT+[jk] or Comamnd+[jk] on mac
-    nmap <M-j> mz:m+<cr>`z
-    nmap <M-k> mz:m-2<cr>`z
-    vmap <M-j> :m'>+<cr>`<my`>mzgv`yo`z
-    vmap <M-k> :m'<-2<cr>`>my`<mzgv`yo`z
+    "map <C-j> :move +1<CR>
+    "map <C-k> :move -2<CR>
 
     if has("mac") || has("macunix")
       nmap <D-j> <M-j>
@@ -246,45 +369,14 @@
     endif
 
     " Delete trailing white space on save, useful for Python and CoffeeScript ;)
-    func! DeleteTrailingWS()
-      exe "normal mz"
-      %s/\s\+$//ge
-      exe "normal `z"
-    endfunc
-    autocmd BufWrite *.py :call DeleteTrailingWS()
-    autocmd BufWrite *.coffee :call DeleteTrailingWS()
-
-
-    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-    " => vimgrep searching and cope displaying
-    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-    " When you press gv you vimgrep after the selected text
-    vnoremap <silent> gv :call VisualSelection('gv')<CR>
-
-    " Open vimgrep and put the cursor in the right position
-    map <leader>g :vimgrep // **/*.<left><left><left><left><left><left><left>
-
-    " Vimgreps in the current file
-    map <leader><space> :vimgrep // <C-R>%<C-A><right><right><right><right><right><right><right><right><right>
-
-    " When you press <leader>r you can search and replace the selected text
-    vnoremap <silent> <leader>r :call VisualSelection('replace')<CR>
-
-    " Do :help cope if you are unsure what cope is. It's super useful!
-    "
-    " When you search with vimgrep, display your results in cope by doing:
-    "   <leader>cc
-    "
-    " To go to the next search result do:
-    "   <leader>n
-    "
-    " To go to the previous search results do:
-    "   <leader>p
-    "
-    map <leader>cc :botright cope<cr>
-    map <leader>co ggVGy:tabnew<cr>:set syntax=qf<cr>pgg
-    map <leader>n :cn<cr>
-    map <leader>p :cp<cr>
+    " Deactivating as this is not good for maintaining projects, as it affects files
+    " func! DeleteTrailingWS()
+    "   exe "normal mz"
+    "   %s/\s\+$//ge
+    "   exe "normal `z"
+    " endfunc
+    " autocmd BufWrite *.py :call DeleteTrailingWS()
+    " autocmd BufWrite *.coffee :call DeleteTrailingWS()
 
 
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -299,8 +391,8 @@
     map <leader>sa zg
     map <leader>s? z=
 
-
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
     " => Misc
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Remove the Windows ^M - when the encodings gets messed up
@@ -312,7 +404,7 @@ map <leader>q :e ~/buffer<cr>
 " Toggle paste mode on and off
 map <leader>pp :setlocal paste!<cr>
 
-" Set mouseclick for vim
+" Set mouseclick for vimpp
 set mouse=a
 
 
@@ -378,27 +470,67 @@ function! <SID>BufcloseCloseIt()
 endfunction
 
 
+    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+    " => Color syntax for NERDTree highlighting
+    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+    " NERDTress File highlighting
+    function! NERDTreeHighlightFile(extension, fg, bg, guifg, guibg)
+        exec 'autocmd FileType nerdtree highlight ' . a:extension .' ctermbg='. a:bg .' ctermfg='. a:fg .' guibg='. a:guibg .' guifg='. a:guifg
+        exec 'autocmd FileType nerdtree syn match ' . a:extension .' #^\s\+.*'. a:extension .'$#'
+    endfunction
+
+    call NERDTreeHighlightFile('sh', 'green', 'none', 'green', '#151515')
+    call NERDTreeHighlightFile('ini', 'yellow', 'none', 'yellow', '#151515')
+    call NERDTreeHighlightFile('md', 'blue', 'none', '#3366FF', '#151515')
+    call NERDTreeHighlightFile('yml', 'yellow', 'none', 'yellow', '#151515')
+    call NERDTreeHighlightFile('config', 'yellow', 'none', 'yellow', '#151515')
+    call NERDTreeHighlightFile('conf', 'yellow', 'none', 'yellow', '#151515')
+    call NERDTreeHighlightFile('json', 'yellow', 'none', 'yellow', '#151515')
+    call NERDTreeHighlightFile('html', 'yellow', 'none', 'yellow', '#151515')
+    call NERDTreeHighlightFile('styl', 'cyan', 'none', 'cyan', '#151515')
+    call NERDTreeHighlightFile('css', 'cyan', 'none', 'cyan', '#151515')
+    call NERDTreeHighlightFile('pyc', 'Gray', 'none', 'red', '#151515')
+    call NERDTreeHighlightFile('log', 'Gray', 'none', 'red', '#151515')
+    call NERDTreeHighlightFile('js', 'Magenta', 'none', '#ffa500', '#151515')
+    call NERDTreeHighlightFile('py', 'Magenta', 'none', '#ff00ff', '#151515')
+    call NERDTreeHighlightFile('ds_store', 'Gray', 'none', '#686868', '#151515')
+    call NERDTreeHighlightFile('gitconfig', 'Gray', 'none', '#686868', '#151515')
+    call NERDTreeHighlightFile('gitignore', 'Gray', 'none', '#686868', '#151515')
+    call NERDTreeHighlightFile('bashrc', 'Gray', 'none', '#686868', '#151515')
+    call NERDTreeHighlightFile('bashprofile', 'Gray', 'none', '#686868', '#151515')
 
 
-" Maintainer of the original skelleton VIMRC file:
-"       Amir Salihefendic
-"       http://amix.dk - amix@amix.dk
-"
-" Version:
-"       5.0 - 29/05/12 15:43:36
-"
-" Blog_post:
-"       http://amix.dk/blog/post/19691#The-ultimate-Vim-configuration-on-Github
-"
-" Awesome_version:
-"       Get this config, nice color schemes and lots of plugins!
-"
-"       Install the awesome version from:
-"
-"           https://github.com/amix/vimrc
-"
-" Syntax_highlighted:
-"       http://amix.dk/vim/vimrc.html
-"
-" Raw_version:
-"       http://amix.dk/vim/vimrc.txt
+    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+	" Configuration for extra visualisation in FZF.vim
+    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+	" Command for git grep
+	" - fzf#vim#grep(command, with_column, [options], [fullscreen])
+	command! -bang -nargs=* GGrep
+	  \ call fzf#vim#grep('git grep --line-number '.shellescape(<q-args>), 0, <bang>0)
+
+	" Override Colors command. You can safely do this in your .vimrc as fzf.vim
+	" will not override existing commands.
+	command! -bang Colors
+	  \ call fzf#vim#colors({'left': '15%', 'options': '--reverse --margin 30%,0'}, <bang>0)
+
+    " Augmenting Ag command using fzf#vim#with_preview function
+    "     * For syntax-highlighting, Ruby and any of the following tools are required:
+    "       - Highlight: http://www.andre-simon.de/doku/highlight/en/highlight.php
+    "       - CodeRay: http://coderay.rubychan.de/
+    "       - Rouge: https://github.com/jneen/rouge
+    command! -bang -nargs=* Ag
+      \ call fzf#vim#ag(<q-args>,
+      \                 <bang>0 ? fzf#vim#with_preview('up:60%')
+      \                         : fzf#vim#with_preview(),
+      \                 <bang>0)
+
+    " Likewise, Files command with preview window
+    command! -bang -nargs=? -complete=dir Files
+      \ call fzf#vim#files(<q-args>, fzf#vim#with_preview(), <bang>0)
+
+    " Likewise, GFiles command with preview window
+    command! -bang -nargs=? -complete=dir GFiles
+      \ call fzf#vim#gitfiles(<q-args>, fzf#vim#with_preview(), <bang>0)
+
+
+

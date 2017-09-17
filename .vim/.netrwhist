@@ -1,7 +1,3 @@
 let g:netrw_dirhistmax  =10
-let g:netrw_dirhist_cnt =5
-let g:netrw_dirhist_1='/Users/alejandrosaucedo'
-let g:netrw_dirhist_2='/Users/alejandrosaucedo/Downloads/rabbitmq_server-3.6.1/etc/rabbitmq'
-let g:netrw_dirhist_3='/Users/alejandrosaucedo/.nvm'
-let g:netrw_dirhist_4='/Users/alejandrosaucedo/.ssh'
-let g:netrw_dirhist_5='/Users/alejandrosaucedo/Programming/configcomp/vimrc/.vim'
+let g:netrw_dirhist_cnt =1
+let g:netrw_dirhist_1='/Users/alejandrosaucedo/Programming/eigen/eigentech'
