@@ -1,4 +1,4 @@
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
 " The original VIMRC file was initially obtained by Amir Salihefendic
 "   for more details read the end of this file.
 "
@@ -55,6 +55,8 @@
     Plug 'junegunn/vim-xmark', { 'do': 'make' }
     " Adding support for YCM
     Plug 'Valloric/YouCompleteMe'
+    " Navigation between tmux and vim
+    Plug 'christoomey/vim-tmux-navigator'
     " Smooth scroll
     Plug 'terryma/vim-smooth-scroll'
     " Complete closing parentheses
@@ -63,7 +65,50 @@
     Plug 'tpope/vim-fugitive'
     " NERD Commenter
     Plug 'scrooloose/nerdcommenter'
+    " Universal ctags
+    Plug 'universal-ctags/ctags'
+    " Gutentags (tagking care of tag managemenet)
+    Plug 'ludovicchabant/vim-gutentags'
+    " Bulletpoint plug
+    Plug 'dkarter/bullets.vim'
+    " Async Linter Engine (ALE)
+    Plug 'w0rp/ale'
+    " Emmet Vim (Autocomplete of HTML)
+    Plug 'mattn/emmet-vim'
+    " Vim airline status line
+    Plug 'vim-airline/vim-airline'
+    " Geeknote plugin
+    Plug 'neilagabriel/vim-geeknote'
 
+    " Airline status line
+    let g:airline#extensions#tabline#enabled = 1
+
+    " ALE Settings
+    " Only run linters defined in ale_linters
+    let g:ale_linters_explicit = 1
+    let b:ale_linters = ['pylint']
+    " Command to ignore all the warnings, comments and refactoring, to
+    " just show errors
+    let g:ale_python_pylint_options = ' --disable=W,C,R '
+    let g:ale_python_pylint_use_global = 0
+    nmap <silent> <C-Up> <Plug>(ale_previous_wrap)
+    nmap <silent> <C-Down> <Plug>(ale_next_wrap)
+    
+    " Geeknote 
+    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+    let g:GeeknoteFormat="markdown"
+
+    nnoremap <S-M> :Geeknote<CR>
+
+    " Bullets.vim
+    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+    let g:bullets_enabled_file_types = [
+        \ 'markdown',
+        \ 'text',
+        \ 'gitcommit',
+        \ 'scratch'
+        \]
+   
     " Finishing plugin list
     call plug#end()
 
@@ -71,14 +116,14 @@
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
     autocmd StdinReadPre * let s:std_in=1
-    " Open NARDTree and move to editing area
-    autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | wincmd p | endif
+    " "  Open NARDTree and move to editing area
+    " autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | wincmd p | endif
 
     " Close VIM if all windwos are closed even if the NERD TREE automatically
     autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
 
     " Allow for Ctrl+n to be shortcut to open nerdtree in the working directory
-    map <C-m> :NERDTreeToggle<CR>
+    nnoremap <C-m> :NERDTreeToggle<CR>
 
     " Set width
     let g:NERDTreeWinSize=30
@@ -118,11 +163,10 @@
     
     " Smooth scrolling
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-    let g:UltiSnipsExpandTrigger="<c-s>"
-    noremap <silent> <c-u> :call smooth_scroll#up(&scroll, 0, 2)<CR>
-    noremap <silent> <c-d> :call smooth_scroll#down(&scroll, 0, 2)<CR>
-    noremap <silent> <c-b> :call smooth_scroll#up(&scroll*2, 0, 4)<CR>
-    noremap <silent> <c-f> :call smooth_scroll#down(&scroll*2, 0, 4)<CR>
+    " noremap <silent> <c-u> :call smooth_scroll#up(&scroll, 0, 2)<CR>
+    " noremap <silent> <c-d> :call smooth_scroll#down(&scroll, 0, 2)<CR>
+    " noremap <silent> <c-b> :call smooth_scroll#up(&scroll*2, 0, 4)<CR>
+    " noremap <silent> <c-f> :call smooth_scroll#down(&scroll*2, 0, 4)<CR>
 
     " Snippets
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -139,12 +183,12 @@
 
     " Commenting
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-    noremap <C-x> <leader>cb
-    noremap <C-u> <leader>cu
+    "noremap <C-x> <leader>cb
+    "noremap <C-u> <leader>cu
 
-    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+    """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " => General
-    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Sets how many lines of history VIM has to remember
     set history=700
 
@@ -253,6 +297,9 @@
     set nowb
     set noswapfile
 
+    " Set up persistent folder
+    set undodir=~/.vim/undodir
+
 
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " => Text, tab and indent related
@@ -273,8 +320,8 @@
 
     set ai "Auto indent
     set si "Smart indent
-    "set wrap "Wrap lines
-    set nowrap "I don't want wrapping
+    set wrap "Wrap lines
+    " set nowrap "I don't want wrapping
 
 
     """"""""""""""""""""""""""""""
@@ -340,15 +387,23 @@
     " Remember info about open buffers on close
     set viminfo^=%
 
+    " Open the definition in a new split window
+    map <C-/> :vsp <CR>:exec("tag ".expand("<cword>"))<CR>
+
+    " Resize the window with bindings
+    noremap <S-H> <C-W>10<
+    noremap <S-L> <C-W>10>
+    noremap <S-J> <C-W>10+
+    noremap <S-K> <C-W>10-
 
     """"""""""""""""""""""""""""""
     " => Status line
     """"""""""""""""""""""""""""""
     " Always show the status line
-    set laststatus=2
+    " set laststatus=2
 
-    " Format the status line
-    set statusline=\ %{HasPaste()}%F%m%r%h\ %w\ \ CWD:\ %r%{getcwd()}%h\ \ \ Line:\ %l
+    " " Format the status line
+    " set statusline=\ %{HasPaste()}%F%m%r%h\ %w\ \ CWD:\ %r%{getcwd()}%h\ \ \ Line:\ %l
 
 
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -406,6 +461,10 @@ map <leader>pp :setlocal paste!<cr>
 
 " Set mouseclick for vimpp
 set mouse=a
+
+" Close with W and Q
+command! -bang -range=% -complete=file -nargs=* W <line1>,<line2>write<bang> <args>
+command! -bang Q quit<bang>
 
 
 
@@ -532,5 +591,11 @@ endfunction
     command! -bang -nargs=? -complete=dir GFiles
       \ call fzf#vim#gitfiles(<q-args>, fzf#vim#with_preview(), <bang>0)
 
+
+    " Reload vimrc file automatically
+    augroup myvimrc
+        au!
+        au BufWritePost .vimrc,_vimrc,vimrc,.gvimrc,_gvimrc,gvimrc so $MYVIMRC | if has('gui_running') | so $MYGVIMRC | endif
+    augroup END
 
 
