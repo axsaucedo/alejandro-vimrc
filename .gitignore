@@ -79,4 +79,8 @@ node_modules/
 
 # TAgs
 tags
+tags.*
+
+# Custom to repo
+plugged
 

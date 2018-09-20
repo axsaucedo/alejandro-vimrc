@@ -272,16 +272,24 @@ if &t_Co > 255
 end
 
 " Setting the color of fonts to white
-hi Normal                 ctermfg=231 ctermbg=234
+"hi Normal                 ctermfg=231 ctermbg=234
+hi Normal           guifg=#e6e1de ctermfg=none gui=none
 hi Function ctermfg=81
 hi Exception       ctermfg=197 cterm=bold
 hi String ctermfg=228
 hi Comment         ctermfg=244 cterm=bold
 hi Visual                      ctermbg=238
+hi Search          ctermbg=210 ctermfg=black
+hi IncSearch          ctermfg=210 ctermbg=black
+set cursorline
+hi Cursor          ctermbg=blue ctermfg=red guifg=red guibg=blue 
 hi PreCondit       ctermfg=197 cterm=bold
 hi Directory       ctermfg=81 cterm=bold
 hi PreProc         ctermfg=197
+hi StatusLine      ctermfg=231 ctermbg=232
+hi StatusLineNC    ctermfg=244 ctermbg=232
 
 " Must be at the end, because of ctermbg=234 bug.
 " https://groups.google.com/forum/#!msg/vim_dev/afPqwAFNdrU/nqh6tOM87QUJ
 set background=dark
+
