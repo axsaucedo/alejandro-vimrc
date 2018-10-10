@@ -79,6 +79,21 @@
     Plug 'vim-airline/vim-airline'
     " Geeknote plugin
     Plug 'neilagabriel/vim-geeknote'
+    " Vim Repeat
+    Plug 'tpope/vim-repeat'
+    " Vim Easyclip
+    Plug 'svermeulen/vim-easyclip'
+    " Previm (Preview markup)
+    Plug 'previm/previm'
+    " Markdown preview
+    Plug 'MikeCoder/markdown-preview.vim'
+
+    " Previm
+    let g:previm_open_cmd = "open -a 'Google Chrome'"
+
+    " Easyclip
+    set clipboard=unnamed
+    let g:EasyClipShareYanks=1
 
     " Airline status line
     let g:airline#extensions#tabline#enabled = 1
@@ -142,7 +157,7 @@
     endfun
     noremap <C-p><C-p> :call FzfOmniFiles()<CR> 
     noremap <C-p><C-b> :Buffers<CR>
-    noremap <C-p><C-f> :Ag<CR>
+    noremap <C-p><C-f> :GGrep<CR>
     noremap <C-p><C-g> :GFiles?<CR>
     noremap <C-p><C-l> :BLines<CR>
     noremap <C-p><C-c> :Commits<CR>
@@ -204,6 +219,12 @@
     let mapleader = ","
     let g:mapleader = ","
 
+    " Mapping WQ to w q 
+    command! WQ wq
+    command! Wq wq
+    command! W w
+    command! Q q
+
     " Fast saving
     nmap <leader>w :w!<cr>
 
@@ -264,7 +285,6 @@
     set t_vb=
     set tm=500
 
-
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " => Colors and Fonts
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -297,9 +317,19 @@
     set nowb
     set noswapfile
 
-    " Set up persistent folder
-    set undodir=~/.vim/undodir
+    " Put plugins and dictionaries in this dir (also on Windows)
+    let vimDir = '$HOME/.vim'
+    let &runtimepath.=','.vimDir
 
+    " Keep undo history across sessions by storing it in a file
+    if has('persistent_undo')
+        let myUndoDir = expand(vimDir . '/undodir')
+        " Create dirs
+        call system('mkdir ' . vimDir)
+        call system('mkdir ' . myUndoDir)
+        let &undodir = myUndoDir
+    set undofile
+    endif
 
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " => Text, tab and indent related
@@ -388,7 +418,7 @@
     set viminfo^=%
 
     " Open the definition in a new split window
-    map <C-/> :vsp <CR>:exec("tag ".expand("<cword>"))<CR>
+    map <C-\> :vsp <CR>:exec("tag ".expand("<cword>"))<CR>
 
     " Resize the window with bindings
     noremap <S-H> <C-W>10<
@@ -564,8 +594,15 @@ endfunction
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 	" Command for git grep
 	" - fzf#vim#grep(command, with_column, [options], [fullscreen])
-	command! -bang -nargs=* GGrep
-	  \ call fzf#vim#grep('git grep --line-number '.shellescape(<q-args>), 0, <bang>0)
+	" command! -bang -nargs=* GGrep
+	"  \ call fzf#vim#grep('git grep --line-number '.shellescape(<q-args>), 0, <bang>0)
+    "
+    command! -bang -nargs=* GGrep
+      \ call fzf#vim#grep(
+      \   'git grep --line-number '.shellescape(<q-args>), 1,
+      \   <bang>0 ? fzf#vim#with_preview('up:60%')
+      \           : fzf#vim#with_preview(),
+      \   <bang>0)
 
 	" Override Colors command. You can safely do this in your .vimrc as fzf.vim
 	" will not override existing commands.
