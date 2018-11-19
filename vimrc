@@ -68,7 +68,7 @@
     " Universal ctags
     Plug 'universal-ctags/ctags'
     " Gutentags (tagking care of tag managemenet)
-    Plug 'ludovicchabant/vim-gutentags'
+    "Plug 'ludovicchabant/vim-gutentags'
     " Bulletpoint plug
     Plug 'dkarter/bullets.vim'
     " Async Linter Engine (ALE)
@@ -77,7 +77,7 @@
     Plug 'mattn/emmet-vim'
     " Vim airline status line
     Plug 'vim-airline/vim-airline'
-    " Geeknote plugin
+    " Geeknote plugin - uses alternative: https://github.com/jeffkowalski/geeknote
     Plug 'neilagabriel/vim-geeknote'
     " Vim Repeat
     Plug 'tpope/vim-repeat'
@@ -344,9 +344,8 @@
     set shiftwidth=4
     set tabstop=4
 
-    " Linebreak on 500 characters
-    set lbr
-    set tw=500
+    " Ensure line breaks don't get forced
+    set nolist
 
     set ai "Auto indent
     set si "Smart indent
